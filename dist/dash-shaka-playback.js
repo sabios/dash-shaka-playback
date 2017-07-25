@@ -136,12 +136,14 @@ var DashShakaPlayback = function (_HTML5Video) {
       this._currentLevelId = id;
       var isAuto = this._currentLevelId === DEFAULT_LEVEL_AUTO;
 
-      this._player.configure({ abr: { enable: !isAuto } });
       this.trigger(_clappr.Events.PLAYBACK_LEVEL_SWITCH_START);
       if (!isAuto) {
+        this._player.configure({ abr: { enabled: false } });
         this.selectTrack(this.videoTracks.filter(function (t) {
           return t.id === _this2._currentLevelId;
         })[0]);
+      } else {
+        this._player.configure({ abr: { enabled: true } });
       }
       this.trigger(_clappr.Events.PLAYBACK_LEVEL_SWITCH_END);
     },
@@ -156,7 +158,15 @@ var DashShakaPlayback = function (_HTML5Video) {
       _shakaPlayer2.default.polyfill.installAll();
       var browserSupported = _shakaPlayer2.default.Player.isBrowserSupported();
       var resourceParts = resource.split('?')[0].match(/.*\.(.*)$/) || [];
-      return browserSupported && (resourceParts[1] === 'mpd' || mimeType.indexOf('application/dash+xml') > -1);
+      return browserSupported && (resourceParts[1] === 'mpd' || mimeType.indexOf('application/dash+xml') > -1 || DashShakaPlayback._enableHls && (resourceParts[1] === 'm3u8' || mimeType === 'application/x-mpegURL' || mimeType === 'application/vnd.apple.mpegurl'));
+    }
+  }, {
+    key: 'withHls',
+    value: function withHls() {
+      var isEnabled = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+      DashShakaPlayback._enableHls = !!isEnabled;
+      return DashShakaPlayback;
     }
   }, {
     key: 'Events',
