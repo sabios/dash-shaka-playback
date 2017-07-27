@@ -355,7 +355,9 @@ var DashShakaPlayback = function (_HTML5Video) {
     key: '_fillLevels',
     value: function _fillLevels() {
       if (this._levels.length === 0) {
-        this._levels = this.videoTracks.map(function (videoTrack) {
+        this._levels = this.videoTracks.sort(function (a, b) {
+          return a.bandwidth > b.bandwidth;
+        }).map(function (videoTrack) {
           return { id: videoTrack.id, label: videoTrack.height + 'p' };
         }).reverse();
         this.trigger(_clappr.Events.PLAYBACK_LEVELS_AVAILABLE, this.levels);
